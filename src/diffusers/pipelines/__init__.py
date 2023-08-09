@@ -90,6 +90,7 @@ else:
         StableDiffusionAttendAndExcitePipeline,
         StableDiffusionDepth2ImgPipeline,
         StableDiffusionDiffEditPipeline,
+        StableDiffusionGLIGENPipeline,
         StableDiffusionImageVariationPipeline,
         StableDiffusionImg2ImgPipeline,
         StableDiffusionInpaintPipeline,
@@ -113,6 +114,7 @@ else:
         StableDiffusionXLInpaintPipeline,
         StableDiffusionXLInstructPix2PixPipeline,
         StableDiffusionXLPipeline,
+        StableDiffusionXLGLIGENPipeline,
     )
     from .t2i_adapter import StableDiffusionAdapterPipeline
     from .text_to_video_synthesis import TextToVideoSDPipeline, TextToVideoZeroPipeline, VideoToVideoSDPipeline
