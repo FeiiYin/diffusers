@@ -188,6 +188,7 @@ else:
         StableDiffusionSAGPipeline,
         StableDiffusionUpscalePipeline,
         StableDiffusionXLControlNetPipeline,
+        StableDiffusionXLGLIGENPipeline,
         StableDiffusionXLImg2ImgPipeline,
         StableDiffusionXLInpaintPipeline,
         StableDiffusionXLInstructPix2PixPipeline,

@@ -110,6 +110,7 @@ else:
     )
     from .stable_diffusion_safe import StableDiffusionPipelineSafe
     from .stable_diffusion_xl import (
+        StableDiffusionXLGLIGENPipeline,
         StableDiffusionXLImg2ImgPipeline,
         StableDiffusionXLInpaintPipeline,
         StableDiffusionXLInstructPix2PixPipeline,

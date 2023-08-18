@@ -54,6 +54,38 @@ class GatedSelfAttentionDense(nn.Module):
         x = x + self.alpha_dense.tanh() * self.ff(self.norm2(x))
 
         return x
+    
+class GatedSelfAttentionDenseXL(nn.Module):
+    def __init__(self, query_dim, context_dim, n_heads, d_head):
+        super().__init__()
+
+        # we need a linear projection since we need cat visual feature and obj feature
+        self.linear = nn.Linear(context_dim, query_dim)
+
+        self.attn = Attention(query_dim=query_dim, heads=n_heads, dim_head=d_head)
+        self.ff = FeedForward(query_dim, activation_fn="geglu")
+
+        self.norm1 = nn.LayerNorm(query_dim)
+        self.norm2 = nn.LayerNorm(query_dim)
+
+        self.register_parameter("alpha_attn", nn.Parameter(torch.tensor(0.0)))
+        self.register_parameter("alpha_dense", nn.Parameter(torch.tensor(0.0)))
+
+        self.enabled = True
+
+    def forward(self, x, objs):
+        if not self.enabled:
+            return x
+
+        n_visual = x.shape[1]
+        B, N, C, D = objs.shape
+        objs = objs.reshape(B, N * C, D)
+        objs = self.linear(objs)
+        
+        x = x + self.alpha_attn.tanh() * self.attn(self.norm1(torch.cat([x, objs], dim=1)))[:, :n_visual, :]
+        x = x + self.alpha_dense.tanh() * self.ff(self.norm2(x))
+
+        return x
 
 
 @maybe_allow_in_graph
@@ -156,7 +188,9 @@ class BasicTransformerBlock(nn.Module):
         # 4. Fuser
         if attention_type == "gated":
             self.fuser = GatedSelfAttentionDense(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
-
+        elif attention_type == "gatedxl":
+            self.fuser = GatedSelfAttentionDenseXL(dim, cross_attention_dim, num_attention_heads, attention_head_dim)
+        
         # let chunk size default to None
         self._chunk_size = None
         self._chunk_dim = 0
